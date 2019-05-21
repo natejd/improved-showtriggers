@@ -19,6 +19,8 @@
 
 int g_iEffects = -1;
 bool g_bShowTriggers[MAXPLAYERS + 1];
+int effectFlags[MAXPLAYERS + 1];
+int edictFlags[MAXPLAYERS + 1];
 
 public Plugin myinfo =
 {
@@ -182,25 +184,25 @@ void TransmitTriggers(int client)
 		}
 
 		// Get flags
-		int effectFlags = GetEntData(i, g_iEffects);
-		int edictFlags = GetEdictFlags(i);
+		effectFlags[client] = GetEntData(i, g_iEffects);
+		edictFlags[client] = GetEdictFlags(i);
 
 		// Determine whether to show triggers or not
 		if (g_bShowTriggers[client])
 		{
-			effectFlags &= ~EF_NODRAW;
-			edictFlags &= ~FL_EDICT_DONTSEND;
+			effectFlags[client] &= ~EF_NODRAW;
+			edictFlags[client] &= ~FL_EDICT_DONTSEND;
 		}
 		else
 		{
-			effectFlags |= EF_NODRAW;
-			edictFlags |= FL_EDICT_DONTSEND;
+			effectFlags[client] |= EF_NODRAW;
+			edictFlags[client] |= FL_EDICT_DONTSEND;
 		}
 
 		// Apply state changes
-		SetEntData(i, g_iEffects, effectFlags);
+		SetEntData(i, g_iEffects, effectFlags[client]);
 		ChangeEdictState(i, g_iEffects);
-		SetEdictFlags(i, edictFlags);
+		SetEdictFlags(i, edictFlags[client]);
 
 		// Should we hook?
 		if (g_bShowTriggers[client])
